@@ -1,0 +1,21 @@
+{
+    "name": "devit/melodimedia",
+    "description": "Consumes melodi API",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Robin Franssen",
+            "email": "robin@dev-it.be"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "DevIT\\MelodiMedia\\": "src/"
+        }
+    },
+    "require": {
+        "ext-soap": "*"
+    },
+    "require-dev": {}
+}
