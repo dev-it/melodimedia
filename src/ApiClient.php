@@ -101,10 +101,12 @@ class ApiClient {
      *
      * @return array|null
      */
-    public function contentTypes(): ?array
+    public function contentTypes(): array
     {
         $response =  $this->client->ContentTypes($this->siteId);
-        return $this->apiParser->parse($response)['ContentType'];
+        $contentTypes = $this->apiParser->parse($response);
+
+        return $contentTypes['ContentType'] ?? $contentTypes;
     }
 
     /**
@@ -116,9 +118,9 @@ class ApiClient {
      *
      * @return array|null
      */
-    public function categoriesForContentType(int $contentTypeId, int $exclusive = 2, bool $adult = false): ?array
+    public function categoriesForContentType(int $contentTypeId, int $exclusive = 2, bool $adult = false): array
     {
-        $categories = $this->client->Categories(
+        $response = $this->client->Categories(
             $this->siteId,
             $contentTypeId,
             intval($adult),
@@ -126,7 +128,9 @@ class ApiClient {
             $this->format
         );
 
-        return $this->apiParser->parse($categories)['category'];
+        $categories = $this->apiParser->parse($response);
+
+        return $categories['category'] ?? $categories;
     }
 
     /**
@@ -138,8 +142,8 @@ class ApiClient {
      *
      * @return mixed
      */
-    public function contentForCategory(int $categoryId, int $exclusive = 2, bool $adult = false) {
-        $content = $this->client->CategoryContent(
+    public function contentForCategory(int $categoryId, int $exclusive = 2, bool $adult = false): array {
+        $response = $this->client->CategoryContent(
             $this->siteId,
             $categoryId,
             $this->rows,
@@ -149,7 +153,9 @@ class ApiClient {
             $this->format
         );
 
-        return $this->apiParser->parse($content)['content'];
+        $content = $this->apiParser->parse($response);
+
+        return $content['content'] ?? $content;
     }
 
     /**
@@ -160,13 +166,18 @@ class ApiClient {
      * @return mixed
      */
     public function contentDetails(int $contentId) {
-        $content = $this->client->ContentDetails(
+        $response = $this->client->ContentDetails(
             $this->siteId,
             $contentId,
             $this->format
         );
 
-        return $this->apiParser->parse($content)['content'];
+        $item = $this->apiParser->parse($response);
+        if (empty($item)) {
+            return $item;
+        }
+
+        return $item['content'];
     }
 
     /**
@@ -178,13 +189,14 @@ class ApiClient {
      * @return array|null
      */
     public function contentDetailsExtended(int $contentId, bool $includeTranslations = true) {
-        $extendedContent =  $this->client->ContentDetailsExtended(
+        $response =  $this->client->ContentDetailsExtended(
             $this->siteId,
             $contentId,
             $this->format,
             intval($includeTranslations)
         );
 
-        return $this->apiParser->parse($extendedContent);
+        $item = $this->apiParser->parse($response);
+        return $item;
     }
 }
