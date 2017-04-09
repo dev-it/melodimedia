@@ -30,6 +30,9 @@ class XMLApiParser implements MelodiApiParser
         return $parsedContent;
     }
 
+    /**
+     * @param $xml
+     */
     public function xmlToArray($xml)
     {
         $output = [];
@@ -43,20 +46,7 @@ class XMLApiParser implements MelodiApiParser
                 if (count($element->children()) == 1) {
                     $output[$type] = $parsedElement;
                 } else {
-                    // Pretty array output.
-                    if (! isset($output[$type])) {
-                        $output[$type] = $parsedElement;
-                        $output[$type]['nested'] = false;
-                    } else if (isset($output[$type]) && isset($output[$type]['nested'])) {
-                        $tmp = $output[$type];
-                        unset($tmp['nested']);
-
-                        $output[$type] = [];
-                        $output[$type][] = $tmp;
-                        $output[$type][] = $parsedElement;
-                    } else {
-                        $output[$type][] = $parsedElement;
-                    }
+                    $output[$type][] = $parsedElement;
                 }
                 continue;
             }
