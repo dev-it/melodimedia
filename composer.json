@@ -15,7 +15,8 @@
         }
     },
     "require": {
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "guzzlehttp/guzzle": "^6.2"
     },
     "require-dev": {}
 }

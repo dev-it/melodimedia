@@ -4,6 +4,7 @@ namespace DevIT\MelodiMedia;
 
 use SoapClient;
 use DevIT\MelodiMedia\Parsers\{MelodiApiParser, XMLApiParser};
+use GuzzleHttp\Psr7;
 
 class ApiClient {
 
@@ -17,6 +18,13 @@ class ApiClient {
      * @var string
      */
     public static $endpoint = 'http://webservice.melodimedia.co.uk/index.cfc?wsdl';
+
+    /**
+     * Endpoint that provides downloadlinks.
+     *
+     * @var string
+     */
+    public static $downloadProvider = 'http://supersiteinsert.melodimedia.co.uk/';
 
     /**
      * Username to authenticate.
@@ -198,5 +206,50 @@ class ApiClient {
 
         $item = $this->apiParser->parse($response);
         return $item;
+    }
+
+    /**
+     * @param int $contentId Remote content id
+     * @param     $identifier
+     * @param     $country
+     */
+    public function getDownloadUrlForContentId(int $contentId, $identifier, $country): ?array
+    {
+        $client = new \GuzzleHttp\Client(['base_uri' => self::$downloadProvider]);
+        $params = [
+            'contentid' => $contentId,
+            'mobilephone' => $identifier,
+            'country' => $country,
+            'username' => $this->username,
+            'password' => $this->password,
+            'override' => 'file',
+        ];
+        try {
+            $response = $client->request('GET', 'cms_insert.cfm', [
+                'query' => $params
+            ]);
+        } catch (\Exception $e) {
+            $matches = [];
+            if ($e->hasResponse()) {
+                $body = Psr7\str($e->getResponse());
+                var_dump($body);
+                preg_match_all("/<h1>(?<status>[0-9]{3}) (?<message>.*)<\/h1>/uism", $body, $matches);
+
+                throw new \Exception($matches['message'][0]);
+            }
+            return null;
+        }
+
+
+        $body = $response->getBody();
+        $matches = [];
+        preg_match_all("/<h1>(?<status>[0-9]{3})(?<message>.*) - (?<ref>[0-9]{8})<\/h1>(?<link>.*)/uism", $body, $matches);
+
+        return [
+            'status' => $matches['status'][0] ?? 0,
+            'ref' => $matches['ref'][0] ?? '',
+            'content' => $matches['link'][0] ?? '',
+        ];
+
     }
 }
