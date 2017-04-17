@@ -232,7 +232,6 @@ class ApiClient {
             $matches = [];
             if ($e->hasResponse()) {
                 $body = Psr7\str($e->getResponse());
-                var_dump($body);
                 preg_match_all("/<h1>(?<status>[0-9]{3}) (?<message>.*)<\/h1>/uism", $body, $matches);
 
                 throw new \Exception($matches['message'][0]);
