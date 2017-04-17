@@ -243,12 +243,12 @@ class ApiClient {
 
         $body = $response->getBody();
         $matches = [];
-        preg_match_all("/<h1>(?<status>[0-9]{3})(?<message>.*) - (?<ref>[0-9]{8})<\/h1>(?<link>.*)/uism", $body, $matches);
+        preg_match_all("/<h1>(?<status>[0-9]{3})(?<message>.*) - (?<ref>[0-9]{8})<\/h1>(?<link>.*)<\/body>/uism", $body, $matches);
 
         return [
             'status' => $matches['status'][0] ?? 0,
             'ref' => $matches['ref'][0] ?? '',
-            'content' => $matches['link'][0] ?? '',
+            'content' => trim($matches['link'][0]) ?? '',
         ];
 
     }
