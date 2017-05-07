@@ -3,10 +3,6 @@
     "description": "Consumes melodi API",
     "type": "library",
     "authors": [
-        {
-            "name": "Robin Franssen",
-            "email": "robin@dev-it.be"
-        }
     ],
     "minimum-stability": "dev",
     "autoload": {
